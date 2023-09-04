@@ -1,0 +1,29 @@
+<?php
+require_once '../vendor/autoload.php'; // Adjust the path as needed
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+if (isset($_POST['tableData'])) {
+    $tableContent = $_POST['tableData'];
+    
+    // Initialize a new Spreadsheet
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Load the HTML content into the spreadsheet
+    $sheet->fromHtml($tableContent);
+
+    // Create a writer and save the spreadsheet to a temporary file
+    $writer = new Xlsx($spreadsheet);
+    $tempFilePath = tempnam(sys_get_temp_dir(), 'excel');
+    $writer->save($tempFilePath);
+
+    // Send the response with the file information
+    $response = [
+        'filePath' => $tempFilePath,
+        'fileName' => 'payslip_export.xlsx'
+    ];
+    echo json_encode($response);
+    exit;
+}
+?>
